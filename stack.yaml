@@ -2,5 +2,7 @@ flags:
   servant-persistent: {}
 packages:
 - '.'
-extra-deps: []
+extra-deps:
+- katip-0.5.0.0
+- safe-exceptions-0.1.6.0
 resolver: lts-6.4

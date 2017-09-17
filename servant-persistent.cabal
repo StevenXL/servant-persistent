@@ -28,7 +28,8 @@ executable perservant
       , warp
       , monad-logger
       , safe
-      , katip
+      , katip >= 0.5 && <0.6
+      , text
     hs-source-dirs:
         app
     default-language:
