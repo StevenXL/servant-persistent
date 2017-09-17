@@ -8,6 +8,7 @@ import           Api                         (app)
 import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
+import qualified Data.Text                   as T
 import           Katip
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
@@ -18,8 +19,6 @@ import           System.IO                   (stdout)
 -- initializes the application.
 main :: IO ()
 main = do
-    handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
-    let mkLogEnv = registerScribe "stdout" handleScribe defaultScribeSettings =<< initLogEnv "MyApp" "production"
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
@@ -27,6 +26,8 @@ main = do
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
+    handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
+    let mkLogEnv = registerScribe (T.pack "stdout") handleScribe defaultScribeSettings =<< initLogEnv (Namespace [T.pack "MyApp"]) (Environment $ (T.pack . show) env)
     run port $ logger $ app cfg
 
 -- | Looks up a setting in the environment, with a provided default, and
