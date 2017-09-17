@@ -8,14 +8,18 @@ import           Api                         (app)
 import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
+import           Katip
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
+import           System.IO                   (stdout)
 
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
 main :: IO ()
 main = do
+    handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
+    let mkLogEnv = registerScribe "stdout" handleScribe defaultScribeSettings =<< initLogEnv "MyApp" "production"
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
